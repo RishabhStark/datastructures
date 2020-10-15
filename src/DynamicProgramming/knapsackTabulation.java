@@ -1,5 +1,5 @@
 /*package whatever //do not write package name here */
-package practise_qsns;
+package DynamicProgramming;
 import java.util.*;
 import java.lang.*;
 import java.io.*;
