@@ -117,6 +117,31 @@ public class Graph {
     }
 
 
+    private boolean isCyclicUtil(int src, boolean[] vis, boolean[] rec) {
+        if(!vis[src]) {
+            rec[src]=true;
+            vis[src]=true;
+        }
+       for(int neighbour:adj.get(src)) {
+           if(!vis[neighbour] && isCyclicUtil(neighbour,vis,rec)) { // call dfs only if node is not visited already
+               return true;
+           }
+           else if(rec[neighbour]) {
+               return true;
+           }
+
+       }
+        rec[src]=false;
+       return false;
+    }
+    public boolean isCyclic(int src) {
+        boolean[] vis=new boolean[v];
+        boolean[] rec=new boolean[v];
+       return isCyclicUtil(src,vis,rec);
+    }
+
+
+
     public static void main(String[] args) {
         Graph g = new Graph(5);
         Scanner scanner = new Scanner(System.in);
