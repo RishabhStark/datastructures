@@ -1,4 +1,4 @@
-package practise_qsns;
+package Arrays;
 
 public class Circular_subarray_sum {
 
