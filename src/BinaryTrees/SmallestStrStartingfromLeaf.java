@@ -1,4 +1,4 @@
-package practise_qsns;
+package BinaryTrees;
 
 public class SmallestStrStartingfromLeaf {
 
