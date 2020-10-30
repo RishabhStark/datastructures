@@ -1,9 +1,6 @@
 package graphs;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Scanner;
+import java.util.*;
 
 public class Graph {
 
@@ -99,46 +96,117 @@ public class Graph {
 //        Space Complexity: O(V).
 //        Since, an extra visited array is needed of size V.
 
-        boolean[] vis =new boolean[v];
-        dfsUtil(src,vis);
+        boolean[] vis = new boolean[v];
+        dfsUtil(src, vis);
     }
 
-    private void dfsUtil(int src,boolean vis[]) {
-        if(vis[src]) {
+    private void dfsUtil(int src, boolean vis[]) {
+        if (vis[src]) {
             return;
         }
-        vis[src]=true;
-        System.out.print(src+" ");
-        for(int neighbour:adj.get(src)) {
-            if(!vis[neighbour]) {
-               dfsUtil(neighbour,vis);
+        vis[src] = true;
+        System.out.print(src + " ");
+        for (int neighbour : adj.get(src)) {
+            if (!vis[neighbour]) {
+                dfsUtil(neighbour, vis);
             }
         }
     }
 
 
     private boolean isCyclicUtil(int src, boolean[] vis, boolean[] rec) {
-        if(!vis[src]) {
-            rec[src]=true;
-            vis[src]=true;
+        if (!vis[src]) {
+            rec[src] = true;
+            vis[src] = true;
         }
-       for(int neighbour:adj.get(src)) {
-           if(!vis[neighbour] && isCyclicUtil(neighbour,vis,rec)) { // call dfs only if node is not visited already
-               return true;
-           }
-           else if(rec[neighbour]) {
-               return true;
-           }
+        for (int neighbour : adj.get(src)) {
+            if (!vis[neighbour] && isCyclicUtil(neighbour, vis, rec)) { // call dfs only if node is not visited already
+                return true;
+            } else if (rec[neighbour]) {
+                return true;
+            }
 
-       }
-        rec[src]=false;
-       return false;
+        }
+        rec[src] = false;
+        return false;
     }
+
     public boolean isCyclic(int src) {
-        boolean[] vis=new boolean[v];
-        boolean[] rec=new boolean[v];
-       return isCyclicUtil(src,vis,rec);
+        boolean[] vis = new boolean[v];
+        boolean[] rec = new boolean[v];
+        return isCyclicUtil(src, vis, rec);
     }
+
+
+    private void topologicalSortUtil(int src, boolean[] vis, Stack<Integer> stack) {
+        vis[src] = true; // don't need to check already visited coz topsort is only applicable for DAG
+        for (int neighbour : adj.get(src)) {
+            if (!vis[neighbour]) {
+                // there may be a case when the current node is also neighbour to some other node
+                topologicalSortUtil(neighbour, vis, stack);
+            }
+        }
+        stack.push(src);
+    }
+
+    public void topologicalSort(int src) {
+        boolean[] vis = new boolean[v];
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < v; i++) {
+            topologicalSortUtil(i, vis, stack);
+            while (!stack.isEmpty()) {
+                System.out.print(stack.pop() + " ");
+            }
+        }
+    }
+
+
+    public void kahansTopSort() {
+        // Create a array to store
+        // indegrees of all
+        // vertices. Initialize all
+        // indegrees as 0.
+        int[] indegree = new int[v];
+        for (int i = 0; i < v; i++) {
+            List<Integer> list = new ArrayList<>(adj.get(i));
+            for (int node : list) {
+                indegree[node]++;
+            }
+        }
+        Queue<Integer> q = new LinkedList<>();
+        List<Integer> topsort = new ArrayList<>();
+        for (int i = 0; i < v; i++) {
+            if (indegree[i] == 0) {
+                q.add(i);
+            }
+        }
+
+        // Initialize count of visited vertices
+        int cnt = 0;
+        while (!q.isEmpty()) {
+            int u = q.remove();
+            topsort.add(u);
+            cnt++;
+            for (int node : adj.get(u)) {
+                if (--indegree[node] == 0) {
+                    q.add(node);
+                }
+            }
+        }
+        // Check if there was a cycle
+        if (cnt != v) {
+            System.out.println(
+                    "There exists a cycle in the graph");
+            return;
+        }
+
+        // Print topological order
+        for (int i : topsort) {
+            System.out.print(i + " ");
+        }
+    }
+
+
 
 
 
@@ -158,3 +226,10 @@ public class Graph {
     }
 
 }
+
+
+
+
+
+
+
