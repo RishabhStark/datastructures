@@ -1,6 +1,6 @@
-package practise_qsns;
+package DynamicProgramming;
 
-class DpOnGrid {
+class DPonGrid {
 
 //    A robot is located at the top-left corner of a m x n grid (marked 'Start' in the diagram below).
 //
