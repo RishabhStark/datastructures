@@ -3,7 +3,7 @@ package graphs;
 import java.util.*;
 
 public class Graph {
-
+int cnt=0;
     private ArrayList<ArrayList<Integer>> adj;
     private int v;
 
@@ -35,6 +35,30 @@ public class Graph {
             }
             System.out.println();
         }
+
+
+    }
+   private void dfs(ArrayList<ArrayList<Integer>> g,boolean[] vis,int node) {
+        vis[node]=true;
+        for(int i:g.get(node)) {
+            if(!vis[i])
+            dfs(g,vis,i);
+        }
+
+    }
+
+    int connectedComponents() {
+        // connected components
+        boolean[] vis=new boolean[v];
+        int cnt=0;
+        for(int i=0;i<v;i++) {
+            if(!vis[i]) {
+                dfs(adj,vis,i);
+                cnt++;
+            }
+        }
+        return cnt;
+
     }
 
 
@@ -206,21 +230,94 @@ public class Graph {
         }
     }
 
+    public boolean cycleUndirectedBfs(int src) {
+        int[] vis = new int[v];
+        Arrays.fill(vis, -1);
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(src);
+        vis[src] = 0;
+        while (!q.isEmpty()) {
+            int s = q.remove();
+            vis[s] = 1;
+
+            for (int neighbor : adj.get(s)) {
+                if (vis[neighbor] == -1) {
+                    q.add(neighbor);
+                    vis[neighbor]=0;
+                }
+                else if(vis[neighbor]==0) {
+                    // means node is already inside queue
+                    return true;
+                }
+
+            }
+        }
+        return false;
 
 
+    }
+
+    public void bridges(int start) {
+        int[] vis=new int[v];
+        int[] in=new int[v];
+        int[] low=new int[v];
+        bridgesDfs(start,-1,0,vis,in,low);
+
+    }
+    private void bridgesDfs(int node,int parent,int timer,int[] vis,int[] in,int[] low) {
+        vis[node]=1;
+        in[node]=timer;
+        low[node]=timer;
+        timer++;
+        for(int child:adj.get(node)) {
+            if(child==parent) continue;
+            if(vis[child]==1) {
+                // it's a backedge
+                low[node]=Math.min(low[node],in[child]);
+            }
+            else {
+                // it's a forward edge
+                bridgesDfs(child,node,timer,vis,in,low);
+                low[node]=Math.min(low[node],low[child]);
+                if(in[node]<low[child]) {
+                    // it's a bridge coz child node can't be reached before without this parent node
+                    System.out.println(node+" "+child+" is a bridge");
+                }
+            }
+        }
+
+
+
+    }
+    public boolean bipartite(int node,int color,boolean[] vis,int[] col) {
+        vis[node]=true;
+        col[node]=color;
+        for(int i:adj.get(node)) {
+            if(!vis[i]) {
+                if(!bipartite(i,color^1,vis,col)) {
+                    return false;
+                }
+             }
+            else {
+                if(col[node]==col[i]) {
+                return false; }
+            }
+        }
+        return true;
+    }
 
 
     public static void main(String[] args) {
-        Graph g = new Graph(5);
+        Graph g = new Graph(4);
         Scanner scanner = new Scanner(System.in);
-        int u = 0, v = 0;
-        g.addEdge(0, 1);
-        g.addEdge(0, 2);
-        g.addEdge(1, 2);
-        g.addEdge(2, 0);
-        g.addEdge(2, 3);
-        g.addEdge(3, 3);
-        g.dfs(2);
+//        0 1 2 3 3 4 4 2
+        g.addEdge( 0, 1);
+        g.addEdge( 1, 2);
+        g.addEdge( 2, 3);
+        g.addEdge(3, 1);
+        g.bridges(0);
+        System.out.println( g.cycleUndirectedBfs(0));
+
 
 
     }
